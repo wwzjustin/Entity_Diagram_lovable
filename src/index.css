@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 221.2 83.2% 53.3%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -30,24 +31,17 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 221.2 83.2% 53.3%;
 
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -98,4 +92,113 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.react-flow__node {
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-size: 12px;
+  background-color: theme('colors.erd.entity');
+  border: 2px solid theme('colors.border');
+  width: 220px;
+}
+
+.react-flow__node.selected {
+  border-color: theme('colors.erd.primary');
+}
+
+.react-flow__handle {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: theme('colors.erd.primary');
+}
+
+.react-flow__edge-path {
+  stroke: theme('colors.erd.line');
+  stroke-width: 1.5;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: theme('colors.erd.primary');
+  stroke-width: 2;
+}
+
+.node-header {
+  background-color: theme('colors.erd.primary');
+  color: white;
+  padding: 8px 12px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  font-weight: 600;
+}
+
+.node-content {
+  padding: 0;
+}
+
+.column-row {
+  padding: 6px 12px;
+  border-bottom: 1px solid theme('colors.border');
+  display: flex;
+  align-items: center;
+}
+
+.column-row:last-child {
+  border-bottom: none;
+}
+
+.primary-key-indicator {
+  color: theme('colors.erd.primary');
+  margin-right: 4px;
+}
+
+.foreign-key-indicator {
+  color: theme('colors.erd.foreignKey');
+  margin-right: 4px;
+}
+
+.column-name {
+  flex: 1;
+  font-weight: 500;
+}
+
+.column-type {
+  color: theme('colors.muted.foreground');
+  font-size: 11px;
+  margin-left: 6px;
+}
+
+.relation-one-to-many::after {
+  content: '1:N';
+  position: absolute;
+  top: -10px;
+  background-color: white;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 10px;
+  border: 1px solid theme('colors.border');
+}
+
+.relation-one-to-one::after {
+  content: '1:1';
+  position: absolute;
+  top: -10px;
+  background-color: white;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 10px;
+  border: 1px solid theme('colors.border');
+}
+
+.relation-many-to-many::after {
+  content: 'N:M';
+  position: absolute;
+  top: -10px;
+  background-color: white;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-size: 10px;
+  border: 1px solid theme('colors.border');
 }
