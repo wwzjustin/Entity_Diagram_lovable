@@ -17,7 +17,7 @@ import {
   MarkerType,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Plus, ZoomIn, ZoomOut, RotateCcw, Layout, Grid } from "lucide-react";
+import { Plus, ZoomIn, ZoomOut, Layout } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
 import EntityCard from "./EntityCard";
@@ -299,15 +299,6 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
               title="Auto arrange entities"
             >
               <Layout className="h-4 w-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant={isAutoLayoutEnabled ? "default" : "outline"}
-              onClick={() => setIsAutoLayoutEnabled(!isAutoLayoutEnabled)}
-              className="bg-white shadow-md hover:shadow-lg"
-              title="Toggle grid snapping"
-            >
-              <Grid className="h-4 w-4" />
             </Button>
           </div>
         </Panel>
