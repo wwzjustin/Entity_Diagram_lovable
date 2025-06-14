@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ReactFlowProvider } from "@xyflow/react";
@@ -12,6 +11,7 @@ import ProjectMetadata from "@/components/ProjectMetadata";
 import { Entity } from "@/types/Entity";
 import { Project, ProjectContributor } from "@/types/Project";
 import { sampleProjects } from "@/data/sampleProjects";
+import AIRecommendationPanel from "@/components/AIRecommendationPanel";
 
 const PROJECTS_STORAGE_KEY = 'erdProjects';
 
@@ -168,6 +168,18 @@ const ProjectWorkspace = () => {
     });
   };
 
+  const handleEntitiesUpdate = (updatedEntities: Entity[]) => {
+    setProject(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        entities: updatedEntities,
+        updatedAt: new Date().toISOString().split('T')[0],
+        lastUpdatedBy: currentUser,
+      };
+    });
+  };
+
   const handleProjectUpdate = (updatedProject: Project) => {
     setProject(updatedProject);
   };
@@ -211,8 +223,14 @@ const ProjectWorkspace = () => {
             </div>
           </div>
 
-          {/* Right side spacer to balance layout */}
-          <div className="w-48"></div>
+          {/* Right side - AI Recommendations */}
+          <div className="w-48 flex justify-end">
+            <AIRecommendationPanel
+              entities={project.entities}
+              onEntitiesUpdate={handleEntitiesUpdate}
+              onEntityAdd={handleEntityAdd}
+            />
+          </div>
         </div>
       </div>
 
