@@ -1,4 +1,3 @@
-
 import { Project } from "@/types/Project";
 
 export const sampleProjects: Project[] = [
@@ -8,6 +7,9 @@ export const sampleProjects: Project[] = [
     description: "Customer relationship and order management system",
     createdAt: "2024-01-15",
     updatedAt: "2024-01-15",
+    contributors: [],
+    isShared: false,
+    activeCollaborators: [],
     entities: [
       {
         id: "customer",
@@ -98,6 +100,9 @@ export const sampleProjects: Project[] = [
     description: "Agent and property management for real estate",
     createdAt: "2024-01-20",
     updatedAt: "2024-01-20",
+    contributors: [],
+    isShared: false,
+    activeCollaborators: [],
     entities: [
       {
         id: "agent",
@@ -205,6 +210,9 @@ export const sampleProjects: Project[] = [
     description: "Product catalog and order processing system",
     createdAt: "2024-01-25",
     updatedAt: "2024-01-25",
+    contributors: [],
+    isShared: false,
+    activeCollaborators: [],
     entities: [
       {
         id: "user",
