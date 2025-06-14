@@ -18,11 +18,12 @@ import {
   MarkerType,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { Plus, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import { Plus, ZoomIn, ZoomOut, RotateCcw, Layout, Grid } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
 import EntityCard from "./EntityCard";
 import { Entity } from "@/types/Entity";
+import { calculateAutoLayout, snapToGrid } from "@/utils/autoLayout";
 
 const nodeTypes = {
   entity: EntityCard
@@ -40,6 +41,7 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { fitView, zoomIn, zoomOut, setCenter } = useReactFlow();
+  const [isAutoLayoutEnabled, setIsAutoLayoutEnabled] = useState(false);
 
   // Convert entities to nodes and create relationships
   React.useEffect(() => {
@@ -53,7 +55,7 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
       }));
     setNodes(newNodes);
 
-    // Create edges based on foreign key relationships
+    // Create edges based on foreign key relationships with improved styling
     const newEdges: Edge[] = [];
     entities.forEach(entity => {
       entity.columns.forEach(column => {
@@ -77,8 +79,25 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
                 target: entity.id,
                 type: "smoothstep",
                 animated: false,
-                style: { stroke: "#3b82f6", strokeWidth: 2 },
+                style: { 
+                  stroke: "#3b82f6", 
+                  strokeWidth: 2,
+                  strokeDasharray: "5,5"
+                },
                 label: "1:N",
+                labelStyle: {
+                  fontSize: 12,
+                  fontWeight: 600,
+                  fill: "#3b82f6",
+                  backgroundColor: "white",
+                  padding: "2px 6px",
+                  borderRadius: "4px",
+                  border: "1px solid #e5e7eb"
+                },
+                labelBgStyle: {
+                  fill: "white",
+                  fillOpacity: 0.9,
+                },
                 markerEnd: {
                   type: MarkerType.ArrowClosed,
                   color: "#3b82f6",
@@ -101,8 +120,21 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
       ...connection,
       type: "smoothstep",
       animated: false,
-      style: { stroke: "#3b82f6", strokeWidth: 2 },
+      style: { 
+        stroke: "#3b82f6", 
+        strokeWidth: 2,
+        strokeDasharray: "5,5"
+      },
       label: "1:N",
+      labelStyle: {
+        fontSize: 12,
+        fontWeight: 600,
+        fill: "#3b82f6",
+      },
+      labelBgStyle: {
+        fill: "white",
+        fillOpacity: 0.9,
+      },
       markerEnd: {
         type: MarkerType.ArrowClosed,
         color: "#3b82f6",
@@ -121,11 +153,27 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
 
   const onNodeClick: NodeMouseHandler = useCallback((_, node) => {
     onEntitySelect(node.id);
-    // Center the clicked entity
+    // Center the clicked entity with smooth animation
     setCenter(node.position.x + 150, node.position.y + 100, { zoom: 1, duration: 800 });
   }, [onEntitySelect, setCenter]);
 
   const handleAddEntity = useCallback(() => {
+    // Find a good position for the new entity
+    const existingPositions = entities.map(e => e.position);
+    let newX = 100;
+    let newY = 100;
+    
+    // Try to find an empty spot
+    while (existingPositions.some(pos => 
+      Math.abs(pos.x - newX) < 300 && Math.abs(pos.y - newY) < 250
+    )) {
+      newX += 350;
+      if (newX > 1000) {
+        newX = 100;
+        newY += 300;
+      }
+    }
+
     const newEntity: Entity = {
       id: `entity-${Date.now()}`,
       name: "New Entity",
@@ -137,7 +185,7 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
           isPrimaryKey: true 
         }
       ],
-      position: { x: Math.random() * 400, y: Math.random() * 300 },
+      position: { x: newX, y: newY },
       visible: true,
     };
     
@@ -147,17 +195,46 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
       title: "Entity Added",
       description: "A new entity has been added to the diagram.",
     });
-  }, [onEntityAdd, toast]);
+  }, [entities, onEntityAdd, toast]);
+
+  const handleAutoLayout = useCallback(() => {
+    const layoutPositions = calculateAutoLayout(entities);
+    
+    // Update entities with new positions
+    entities.forEach(entity => {
+      const newPosition = layoutPositions.get(entity.id);
+      if (newPosition) {
+        onEntityUpdate({
+          ...entity,
+          position: newPosition,
+        });
+      }
+    });
+
+    // Fit view after layout
+    setTimeout(() => {
+      fitView({ duration: 500, padding: 0.1 });
+    }, 100);
+
+    toast({
+      title: "Auto Layout Applied",
+      description: "Entities have been automatically arranged for better visibility.",
+    });
+  }, [entities, onEntityUpdate, fitView, toast]);
 
   const handleNodeDragStop = useCallback((_, node) => {
     const entity = entities.find(e => e.id === node.id);
     if (entity) {
+      // Snap to grid if enabled
+      const finalPosition = isAutoLayoutEnabled ? 
+        snapToGrid(node.position) : node.position;
+        
       onEntityUpdate({
         ...entity,
-        position: node.position,
+        position: finalPosition,
       });
     }
-  }, [entities, onEntityUpdate]);
+  }, [entities, onEntityUpdate, isAutoLayoutEnabled]);
 
   return (
     <div className="w-full h-full relative">
@@ -171,7 +248,12 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
         onNodeDragStop={handleNodeDragStop}
         nodeTypes={nodeTypes}
         fitView
-        className="bg-slate-50"
+        className="bg-gradient-to-br from-slate-50 to-blue-50"
+        connectionLineStyle={{ stroke: "#3b82f6", strokeWidth: 2 }}
+        defaultEdgeOptions={{
+          style: { stroke: "#3b82f6", strokeWidth: 2 },
+          type: "smoothstep",
+        }}
       >
         <Background 
           gap={20} 
@@ -183,43 +265,67 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
         <MiniMap 
           zoomable 
           pannable 
-          className="bg-white border border-gray-200 rounded-lg"
+          className="bg-white border border-gray-200 rounded-lg shadow-lg"
           nodeColor="#3b82f6"
+          nodeStrokeWidth={2}
+          maskColor="rgba(0, 0, 0, 0.1)"
         />
 
-        {/* Zoom Controls */}
-        <Panel position="top-right" className="flex gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => zoomIn({ duration: 300 })}
-            className="bg-white"
-          >
-            <ZoomIn className="h-4 w-4" />
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => zoomOut({ duration: 300 })}
-            className="bg-white"
-          >
-            <ZoomOut className="h-4 w-4" />
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => fitView({ duration: 500, padding: 0.2 })}
-            className="bg-white"
-          >
-            <RotateCcw className="h-4 w-4" />
-          </Button>
+        {/* Enhanced Controls */}
+        <Panel position="top-right" className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => zoomIn({ duration: 300 })}
+              className="bg-white shadow-md hover:shadow-lg"
+            >
+              <ZoomIn className="h-4 w-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => zoomOut({ duration: 300 })}
+              className="bg-white shadow-md hover:shadow-lg"
+            >
+              <ZoomOut className="h-4 w-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => fitView({ duration: 500, padding: 0.2 })}
+              className="bg-white shadow-md hover:shadow-lg"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleAutoLayout}
+              className="bg-white shadow-md hover:shadow-lg"
+              title="Auto arrange entities"
+            >
+              <Layout className="h-4 w-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant={isAutoLayoutEnabled ? "default" : "outline"}
+              onClick={() => setIsAutoLayoutEnabled(!isAutoLayoutEnabled)}
+              className="bg-white shadow-md hover:shadow-lg"
+              title="Toggle grid snapping"
+            >
+              <Grid className="h-4 w-4" />
+            </Button>
+          </div>
         </Panel>
 
-        {/* Floating Add Button */}
+        {/* Enhanced Add Button */}
         <Panel position="bottom-right">
           <Button 
             onClick={handleAddEntity}
-            className="rounded-full w-14 h-14 shadow-lg bg-blue-600 hover:bg-blue-700"
+            className="rounded-full w-16 h-16 shadow-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 border-2 border-white"
             size="lg"
           >
             <Plus className="h-6 w-6" />
