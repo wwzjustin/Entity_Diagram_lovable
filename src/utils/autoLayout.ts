@@ -11,56 +11,52 @@ export const calculateAutoLayout = (entities: Entity[]): Map<string, LayoutPosit
   
   if (entities.length === 0) return positions;
 
+  // Calculate optimal grid dimensions based on entity count
+  const entityCount = entities.length;
+  const cols = Math.ceil(Math.sqrt(entityCount * 1.5)); // Slightly wider than square
+  const rows = Math.ceil(entityCount / cols);
+  
+  // Canvas and spacing parameters
+  const CANVAS_WIDTH = 1200;
+  const CANVAS_HEIGHT = 800;
+  const ENTITY_WIDTH = 280;
+  const ENTITY_HEIGHT = 200;
+  const MIN_SPACING_X = 50;
+  const MIN_SPACING_Y = 50;
+  
+  // Calculate spacing to distribute evenly across canvas
+  const availableWidth = CANVAS_WIDTH - (cols * ENTITY_WIDTH);
+  const availableHeight = CANVAS_HEIGHT - (rows * ENTITY_HEIGHT);
+  
+  const spacingX = Math.max(MIN_SPACING_X, availableWidth / (cols + 1));
+  const spacingY = Math.max(MIN_SPACING_Y, availableHeight / (rows + 1));
+
   // Find entities with no foreign keys (root entities)
   const rootEntities = entities.filter(entity => 
     !entity.columns.some(col => col.isForeignKey)
   );
 
-  // If no root entities, use the first entity as root
-  const roots = rootEntities.length > 0 ? rootEntities : [entities[0]];
-  
-  // Grid layout parameters
-  const GRID_SIZE = 350;
-  const ENTITY_WIDTH = 280;
-  const ENTITY_HEIGHT = 200;
-  
-  let currentRow = 0;
-  let currentCol = 0;
-  const maxCols = Math.ceil(Math.sqrt(entities.length));
-
-  // Position root entities first
-  roots.forEach((entity, index) => {
-    positions.set(entity.id, {
-      x: index * GRID_SIZE,
-      y: 0
-    });
-  });
-
-  // Position remaining entities in a grid, prioritizing those with relationships
-  const remainingEntities = entities.filter(e => !roots.includes(e));
-  
-  // Sort by number of relationships (entities with more relationships come first)
+  // Sort remaining entities by relationship complexity
+  const remainingEntities = entities.filter(e => !rootEntities.includes(e));
   remainingEntities.sort((a, b) => {
     const aRels = a.columns.filter(col => col.isForeignKey).length;
     const bRels = b.columns.filter(col => col.isForeignKey).length;
     return bRels - aRels;
   });
 
-  let nextY = roots.length > 0 ? GRID_SIZE : 0;
-  currentCol = 0;
+  // Combine all entities with roots first
+  const sortedEntities = [...rootEntities, ...remainingEntities];
 
-  remainingEntities.forEach((entity) => {
-    if (currentCol >= maxCols) {
-      currentCol = 0;
-      nextY += GRID_SIZE;
-    }
-
-    positions.set(entity.id, {
-      x: currentCol * GRID_SIZE + (currentCol * 50), // Add some spacing
-      y: nextY
-    });
-
-    currentCol++;
+  // Position entities in an evenly distributed grid
+  sortedEntities.forEach((entity, index) => {
+    const row = Math.floor(index / cols);
+    const col = index % cols;
+    
+    // Calculate position with even distribution
+    const x = spacingX + col * (ENTITY_WIDTH + spacingX);
+    const y = spacingY + row * (ENTITY_HEIGHT + spacingY);
+    
+    positions.set(entity.id, { x, y });
   });
 
   return positions;
