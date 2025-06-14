@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,9 +8,36 @@ import { Plus, Database, Calendar, Users, ShoppingCart, Building2 } from "lucide
 import { Project } from "@/types/Project";
 import { sampleProjects } from "@/data/sampleProjects";
 
+const PROJECTS_STORAGE_KEY = 'erdProjects';
+
 const ProjectsDashboard = () => {
-  const [projects, setProjects] = useState<Project[]>(sampleProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
   const navigate = useNavigate();
+
+  // Load projects from localStorage on component mount
+  useEffect(() => {
+    const savedProjects = localStorage.getItem(PROJECTS_STORAGE_KEY);
+    if (savedProjects) {
+      try {
+        const parsedProjects = JSON.parse(savedProjects);
+        setProjects(parsedProjects);
+      } catch (error) {
+        console.error('Error loading projects from localStorage:', error);
+        setProjects(sampleProjects);
+      }
+    } else {
+      // If no saved projects, use sample projects and save them
+      setProjects(sampleProjects);
+      localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(sampleProjects));
+    }
+  }, []);
+
+  // Save projects to localStorage whenever projects state changes
+  useEffect(() => {
+    if (projects.length > 0) {
+      localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projects));
+    }
+  }, [projects]);
 
   const createNewProject = () => {
     const newProject: Project = {
@@ -21,7 +48,12 @@ const ProjectsDashboard = () => {
       createdAt: new Date().toISOString().split('T')[0],
       updatedAt: new Date().toISOString().split('T')[0],
     };
-    setProjects(prev => [...prev, newProject]);
+    
+    setProjects(prev => {
+      const updatedProjects = [...prev, newProject];
+      return updatedProjects;
+    });
+    
     navigate(`/project/${newProject.id}`);
   };
 
