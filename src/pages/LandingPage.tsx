@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -68,19 +67,6 @@ const LandingPage = () => {
             Create professional Entity Relationship Diagrams with the power of AI. 
             Design, optimize, and collaborate on your database schemas like never before.
           </p>
-
-          {/* Product Description */}
-          <div className="bg-white rounded-xl shadow-lg p-8 mb-8 max-w-4xl mx-auto border border-blue-100">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">What is ERD Tool?</h2>
-            <p className="text-lg text-gray-700 mb-4">
-              ERD Tool is an intelligent database design platform that combines intuitive visual editing with powerful AI recommendations. 
-              Whether you're a database architect, developer, or data analyst, our tool helps you create well-structured, optimized database schemas effortlessly.
-            </p>
-            <p className="text-gray-600">
-              Simply upload your existing schema or start from scratch, and let our AI guide you toward best practices in database design, 
-              normalization, and performance optimization. Perfect for both beginners learning database concepts and experts looking to streamline their workflow.
-            </p>
-          </div>
           
           <div className="flex items-center justify-center gap-4">
             <Button 
