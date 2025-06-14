@@ -70,7 +70,7 @@ const LandingPage = () => {
           <div className="flex items-center justify-center gap-4">
             <Button 
               size="lg" 
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/dashboard')}
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 text-lg"
             >
               Get Started
@@ -172,7 +172,7 @@ const LandingPage = () => {
             <Button 
               size="lg" 
               variant="secondary"
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/dashboard')}
               className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 text-lg"
             >
               Start Creating
