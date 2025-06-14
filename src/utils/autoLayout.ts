@@ -13,23 +13,23 @@ export const calculateAutoLayout = (entities: Entity[]): Map<string, LayoutPosit
 
   // Calculate optimal grid dimensions based on entity count
   const entityCount = entities.length;
-  const cols = Math.ceil(Math.sqrt(entityCount * 1.5)); // Slightly wider than square
+  const cols = Math.ceil(Math.sqrt(entityCount * 1.2)); // More square-like distribution
   const rows = Math.ceil(entityCount / cols);
   
-  // Canvas and spacing parameters
-  const CANVAS_WIDTH = 1200;
-  const CANVAS_HEIGHT = 800;
+  // Canvas and spacing parameters - increased for better distribution
+  const CANVAS_WIDTH = 1600;
+  const CANVAS_HEIGHT = 1200;
   const ENTITY_WIDTH = 280;
   const ENTITY_HEIGHT = 200;
-  const MIN_SPACING_X = 50;
-  const MIN_SPACING_Y = 50;
+  const MIN_SPACING_X = 120; // Increased minimum spacing
+  const MIN_SPACING_Y = 100; // Increased minimum spacing
   
-  // Calculate spacing to distribute evenly across canvas
-  const availableWidth = CANVAS_WIDTH - (cols * ENTITY_WIDTH);
-  const availableHeight = CANVAS_HEIGHT - (rows * ENTITY_HEIGHT);
+  // Calculate optimal spacing to use full canvas
+  const totalEntityWidth = cols * ENTITY_WIDTH;
+  const totalEntityHeight = rows * ENTITY_HEIGHT;
   
-  const spacingX = Math.max(MIN_SPACING_X, availableWidth / (cols + 1));
-  const spacingY = Math.max(MIN_SPACING_Y, availableHeight / (rows + 1));
+  const optimalSpacingX = Math.max(MIN_SPACING_X, (CANVAS_WIDTH - totalEntityWidth) / (cols + 1));
+  const optimalSpacingY = Math.max(MIN_SPACING_Y, (CANVAS_HEIGHT - totalEntityHeight) / (rows + 1));
 
   // Find entities with no foreign keys (root entities)
   const rootEntities = entities.filter(entity => 
@@ -44,17 +44,17 @@ export const calculateAutoLayout = (entities: Entity[]): Map<string, LayoutPosit
     return bRels - aRels;
   });
 
-  // Combine all entities with roots first
+  // Combine all entities with roots first, then by relationship complexity
   const sortedEntities = [...rootEntities, ...remainingEntities];
 
-  // Position entities in an evenly distributed grid
+  // Position entities in an optimally spaced grid
   sortedEntities.forEach((entity, index) => {
     const row = Math.floor(index / cols);
     const col = index % cols;
     
-    // Calculate position with even distribution
-    const x = spacingX + col * (ENTITY_WIDTH + spacingX);
-    const y = spacingY + row * (ENTITY_HEIGHT + spacingY);
+    // Calculate position with optimal spacing
+    const x = optimalSpacingX + col * (ENTITY_WIDTH + optimalSpacingX);
+    const y = optimalSpacingY + row * (ENTITY_HEIGHT + optimalSpacingY);
     
     positions.set(entity.id, { x, y });
   });
