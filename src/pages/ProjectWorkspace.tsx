@@ -10,6 +10,8 @@ import { Entity } from "@/types/Entity";
 import { Project } from "@/types/Project";
 import { sampleProjects } from "@/data/sampleProjects";
 
+const PROJECTS_STORAGE_KEY = 'erdProjects';
+
 const ProjectWorkspace = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
@@ -17,8 +19,19 @@ const ProjectWorkspace = () => {
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Load project data (in a real app, this would come from a database)
-    const foundProject = sampleProjects.find(p => p.id === projectId);
+    // Load project data from localStorage first
+    const savedProjects = localStorage.getItem(PROJECTS_STORAGE_KEY);
+    let allProjects = sampleProjects;
+    
+    if (savedProjects) {
+      try {
+        allProjects = JSON.parse(savedProjects);
+      } catch (error) {
+        console.error('Error loading projects from localStorage:', error);
+      }
+    }
+
+    const foundProject = allProjects.find(p => p.id === projectId);
     if (foundProject) {
       setProject(foundProject);
     } else if (projectId) {
@@ -32,8 +45,43 @@ const ProjectWorkspace = () => {
         updatedAt: new Date().toISOString().split('T')[0],
       };
       setProject(newProject);
+      
+      // Save the new project to localStorage
+      const updatedProjects = [...allProjects, newProject];
+      localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(updatedProjects));
     }
   }, [projectId]);
+
+  // Save project changes to localStorage whenever project state changes
+  useEffect(() => {
+    if (project) {
+      const savedProjects = localStorage.getItem(PROJECTS_STORAGE_KEY);
+      let allProjects = [];
+      
+      if (savedProjects) {
+        try {
+          allProjects = JSON.parse(savedProjects);
+        } catch (error) {
+          console.error('Error loading projects from localStorage:', error);
+          allProjects = sampleProjects;
+        }
+      } else {
+        allProjects = sampleProjects;
+      }
+
+      // Update the current project in the array
+      const updatedProjects = allProjects.map(p => 
+        p.id === project.id ? project : p
+      );
+
+      // If project doesn't exist in the array, add it
+      if (!allProjects.find(p => p.id === project.id)) {
+        updatedProjects.push(project);
+      }
+
+      localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(updatedProjects));
+    }
+  }, [project]);
 
   if (!project) {
     return (
