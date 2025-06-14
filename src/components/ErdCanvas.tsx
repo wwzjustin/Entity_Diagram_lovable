@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useRef } from "react";
 import {
   ReactFlow,
@@ -14,6 +13,7 @@ import {
   NodeMouseHandler,
   Panel,
   useReactFlow,
+  BackgroundVariant,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Plus, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
@@ -127,7 +127,7 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
         <Background 
           gap={20} 
           color="#e2e8f0" 
-          variant="dots" as any
+          variant={BackgroundVariant.Dots}
           size={1}
         />
         
