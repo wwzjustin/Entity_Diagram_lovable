@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useRef } from "react";
 import {
   ReactFlow,
@@ -14,6 +15,7 @@ import {
   Panel,
   useReactFlow,
   BackgroundVariant,
+  MarkerType,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { Plus, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
@@ -39,7 +41,7 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { fitView, zoomIn, zoomOut, setCenter } = useReactFlow();
 
-  // Convert entities to nodes
+  // Convert entities to nodes and create relationships
   React.useEffect(() => {
     const newNodes: Node[] = entities
       .filter(entity => entity.visible !== false)
@@ -50,7 +52,48 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
         data: entity as any,
       }));
     setNodes(newNodes);
-  }, [entities, setNodes]);
+
+    // Create edges based on foreign key relationships
+    const newEdges: Edge[] = [];
+    entities.forEach(entity => {
+      entity.columns.forEach(column => {
+        if (column.isForeignKey) {
+          // Try to find the referenced entity based on naming convention
+          const referencedEntityName = column.name.replace('_id', '');
+          const referencedEntity = entities.find(e => 
+            e.name.toLowerCase() === referencedEntityName || 
+            e.id === referencedEntityName ||
+            e.name.toLowerCase().replace(' ', '_') === referencedEntityName ||
+            e.name.toLowerCase().replace(' ', '') === referencedEntityName
+          );
+
+          if (referencedEntity) {
+            const edgeId = `${referencedEntity.id}-${entity.id}`;
+            // Check if edge already exists
+            if (!newEdges.find(edge => edge.id === edgeId)) {
+              newEdges.push({
+                id: edgeId,
+                source: referencedEntity.id,
+                target: entity.id,
+                type: "smoothstep",
+                animated: false,
+                style: { stroke: "#3b82f6", strokeWidth: 2 },
+                label: "1:N",
+                markerEnd: {
+                  type: MarkerType.ArrowClosed,
+                  color: "#3b82f6",
+                  width: 20,
+                  height: 20,
+                },
+              });
+            }
+          }
+        }
+      });
+    });
+
+    setEdges(newEdges);
+  }, [entities, setNodes, setEdges]);
 
   const onConnect = useCallback((connection: Connection) => {
     const newEdge: Edge = {
@@ -60,6 +103,12 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
       animated: false,
       style: { stroke: "#3b82f6", strokeWidth: 2 },
       label: "1:N",
+      markerEnd: {
+        type: MarkerType.ArrowClosed,
+        color: "#3b82f6",
+        width: 20,
+        height: 20,
+      },
     };
     
     setEdges((eds) => addEdge(newEdge, eds));
