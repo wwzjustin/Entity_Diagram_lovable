@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useRef } from "react";
 import {
   ReactFlow,
@@ -289,14 +288,6 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
               className="bg-white shadow-md hover:shadow-lg"
             >
               <ZoomOut className="h-4 w-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => fitView({ duration: 500, padding: 0.2 })}
-              className="bg-white shadow-md hover:shadow-lg"
-            >
-              <RotateCcw className="h-4 w-4" />
             </Button>
           </div>
           <div className="flex gap-2">
