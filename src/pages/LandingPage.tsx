@@ -1,8 +1,8 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import DemoModal from "@/components/DemoModal";
 import { 
   Sparkles, 
   Database, 
@@ -17,6 +17,7 @@ import {
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const [showDemo, setShowDemo] = useState(false);
 
   const features = [
     {
@@ -80,6 +81,7 @@ const LandingPage = () => {
             <Button 
               size="lg" 
               variant="outline"
+              onClick={() => setShowDemo(true)}
               className="px-8 py-3 text-lg border-blue-300 hover:bg-blue-50"
             >
               View Demo
@@ -189,6 +191,8 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
+
+      <DemoModal isOpen={showDemo} onClose={() => setShowDemo(false)} />
     </div>
   );
 };
