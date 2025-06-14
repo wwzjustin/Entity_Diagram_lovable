@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Database, Calendar, Users, ShoppingCart, Building2 } from "lucide-react";
-import { Project } from "@/types/Project";
+import { Plus, Database, Calendar, Users, ShoppingCart, Building2, User } from "lucide-react";
+import { Project, ProjectContributor } from "@/types/Project";
 import { sampleProjects } from "@/data/sampleProjects";
 
 const PROJECTS_STORAGE_KEY = 'erdProjects';
@@ -14,21 +14,47 @@ const ProjectsDashboard = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const navigate = useNavigate();
 
+  // Simulate current user
+  const currentUser: ProjectContributor = {
+    id: 'current-user',
+    name: 'You',
+    email: 'user@example.com',
+    lastActive: new Date().toISOString(),
+    role: 'owner',
+  };
+
   // Load projects from localStorage on component mount
   useEffect(() => {
     const savedProjects = localStorage.getItem(PROJECTS_STORAGE_KEY);
     if (savedProjects) {
       try {
         const parsedProjects = JSON.parse(savedProjects);
-        setProjects(parsedProjects);
+        // Ensure all projects have collaboration properties
+        const enhancedProjects = parsedProjects.map((project: Project) => ({
+          ...project,
+          contributors: project.contributors || [],
+          isShared: project.isShared || false,
+          activeCollaborators: project.activeCollaborators || [],
+          createdBy: project.createdBy || currentUser,
+          lastUpdatedBy: project.lastUpdatedBy || currentUser,
+        }));
+        setProjects(enhancedProjects);
       } catch (error) {
         console.error('Error loading projects from localStorage:', error);
         setProjects(sampleProjects);
       }
     } else {
       // If no saved projects, use sample projects and save them
-      setProjects(sampleProjects);
-      localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(sampleProjects));
+      const enhancedSampleProjects = sampleProjects.map(project => ({
+        ...project,
+        contributors: [],
+        isShared: false,
+        activeCollaborators: [],
+        createdBy: currentUser,
+        lastUpdatedBy: currentUser,
+      }));
+      setProjects(enhancedSampleProjects);
+      localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(enhancedSampleProjects));
     }
   }, []);
 
@@ -47,6 +73,11 @@ const ProjectsDashboard = () => {
       entities: [],
       createdAt: new Date().toISOString().split('T')[0],
       updatedAt: new Date().toISOString().split('T')[0],
+      contributors: [],
+      isShared: false,
+      activeCollaborators: [],
+      createdBy: currentUser,
+      lastUpdatedBy: currentUser,
     };
     
     setProjects(prev => {
@@ -112,6 +143,13 @@ const ProjectsDashboard = () => {
                       <div className="flex items-center gap-2 mt-1">
                         <Calendar className="h-3 w-3 text-gray-400" />
                         <span className="text-xs text-gray-500">Updated {project.updatedAt}</span>
+                        {project.lastUpdatedBy && (
+                          <>
+                            <span className="text-xs text-gray-400">•</span>
+                            <User className="h-3 w-3 text-gray-400" />
+                            <span className="text-xs text-gray-500">{project.lastUpdatedBy.name}</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -121,11 +159,40 @@ const ProjectsDashboard = () => {
                 <CardDescription className="mb-4 line-clamp-2">
                   {project.description}
                 </CardDescription>
-                <div className="flex items-center justify-between">
+                
+                {/* Project Stats */}
+                <div className="flex items-center justify-between mb-3">
                   <Badge variant="secondary" className="gap-1">
                     <Database className="h-3 w-3" />
                     {getEntityCount(project)} entities
                   </Badge>
+                  
+                  {project.contributors.length > 0 && (
+                    <Badge variant="outline" className="gap-1">
+                      <Users className="h-3 w-3" />
+                      {project.contributors.length} contributors
+                    </Badge>
+                  )}
+                </div>
+
+                {/* Collaboration Indicators */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {project.isShared && (
+                      <Badge variant="secondary" className="text-xs">
+                        Shared
+                      </Badge>
+                    )}
+                    {project.activeCollaborators && project.activeCollaborators.length > 0 && (
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                        <span className="text-xs text-green-600 font-medium">
+                          {project.activeCollaborators.length} active
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
                   <Button variant="ghost" size="sm">
                     Open Project →
                   </Button>

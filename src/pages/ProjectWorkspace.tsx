@@ -3,11 +3,14 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ReactFlowProvider } from "@xyflow/react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Users, Share } from "lucide-react";
 import ErdCanvas from "@/components/ErdCanvas";
 import EntitySidebar from "@/components/EntitySidebar";
+import ShareProjectDialog from "@/components/ShareProjectDialog";
+import CollaboratorIndicator from "@/components/CollaboratorIndicator";
+import ProjectMetadata from "@/components/ProjectMetadata";
 import { Entity } from "@/types/Entity";
-import { Project } from "@/types/Project";
+import { Project, ProjectContributor } from "@/types/Project";
 import { sampleProjects } from "@/data/sampleProjects";
 
 const PROJECTS_STORAGE_KEY = 'erdProjects';
@@ -17,6 +20,17 @@ const ProjectWorkspace = () => {
   const navigate = useNavigate();
   const [project, setProject] = useState<Project | null>(null);
   const [selectedEntityId, setSelectedEntityId] = useState<string | null>(null);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [showMetadata, setShowMetadata] = useState(false);
+
+  // Simulate current user
+  const currentUser: ProjectContributor = {
+    id: 'current-user',
+    name: 'You',
+    email: 'user@example.com',
+    lastActive: new Date().toISOString(),
+    role: 'owner',
+  };
 
   useEffect(() => {
     // Load project data from localStorage first
@@ -33,7 +47,17 @@ const ProjectWorkspace = () => {
 
     const foundProject = allProjects.find(p => p.id === projectId);
     if (foundProject) {
-      setProject(foundProject);
+      // Ensure project has collaboration properties
+      const enhancedProject = {
+        ...foundProject,
+        contributors: foundProject.contributors || [],
+        isShared: foundProject.isShared || false,
+        shareCode: foundProject.shareCode,
+        activeCollaborators: foundProject.activeCollaborators || [],
+        createdBy: foundProject.createdBy || currentUser,
+        lastUpdatedBy: foundProject.lastUpdatedBy || currentUser,
+      };
+      setProject(enhancedProject);
     } else if (projectId) {
       // Create a new empty project if not found
       const newProject: Project = {
@@ -43,6 +67,11 @@ const ProjectWorkspace = () => {
         entities: [],
         createdAt: new Date().toISOString().split('T')[0],
         updatedAt: new Date().toISOString().split('T')[0],
+        contributors: [],
+        isShared: false,
+        activeCollaborators: [],
+        createdBy: currentUser,
+        lastUpdatedBy: currentUser,
       };
       setProject(newProject);
       
@@ -106,7 +135,8 @@ const ProjectWorkspace = () => {
         entities: prev.entities.map(entity => 
           entity.id === updatedEntity.id ? updatedEntity : entity
         ),
-        updatedAt: new Date().toISOString().split('T')[0]
+        updatedAt: new Date().toISOString().split('T')[0],
+        lastUpdatedBy: currentUser,
       };
     });
   };
@@ -117,7 +147,8 @@ const ProjectWorkspace = () => {
       return {
         ...prev,
         entities: prev.entities.filter(entity => entity.id !== entityId),
-        updatedAt: new Date().toISOString().split('T')[0]
+        updatedAt: new Date().toISOString().split('T')[0],
+        lastUpdatedBy: currentUser,
       };
     });
     if (selectedEntityId === entityId) {
@@ -131,9 +162,14 @@ const ProjectWorkspace = () => {
       return {
         ...prev,
         entities: [...prev.entities, entity],
-        updatedAt: new Date().toISOString().split('T')[0]
+        updatedAt: new Date().toISOString().split('T')[0],
+        lastUpdatedBy: currentUser,
       };
     });
+  };
+
+  const handleProjectUpdate = (updatedProject: Project) => {
+    setProject(updatedProject);
   };
 
   const goBackToProjects = () => {
@@ -143,10 +179,18 @@ const ProjectWorkspace = () => {
   return (
     <div className="flex h-screen w-full bg-slate-50">
       {/* Header */}
-      <div className="absolute top-4 left-4 z-10">
+      <div className="absolute top-4 left-4 z-10 flex gap-2">
         <Button variant="outline" onClick={goBackToProjects} className="gap-2 bg-white">
           <ArrowLeft className="h-4 w-4" />
           Back to Projects
+        </Button>
+        <Button variant="outline" onClick={() => setShowMetadata(!showMetadata)} className="gap-2 bg-white">
+          <Users className="h-4 w-4" />
+          Details
+        </Button>
+        <Button variant="outline" onClick={() => setShowShareDialog(true)} className="gap-2 bg-white">
+          <Share className="h-4 w-4" />
+          Share
         </Button>
       </div>
 
@@ -154,8 +198,21 @@ const ProjectWorkspace = () => {
         <div className="bg-white px-4 py-2 rounded-lg shadow-sm border">
           <h1 className="font-semibold text-gray-900">{project.name}</h1>
           <p className="text-sm text-gray-600">{project.description}</p>
+          <div className="mt-2">
+            <CollaboratorIndicator 
+              contributors={project.contributors}
+              activeCollaborators={project.activeCollaborators}
+            />
+          </div>
         </div>
       </div>
+
+      {/* Project Metadata Panel */}
+      {showMetadata && (
+        <div className="absolute top-20 left-4 z-10 w-96">
+          <ProjectMetadata project={project} />
+        </div>
+      )}
 
       <EntitySidebar 
         entities={project.entities}
@@ -175,6 +232,13 @@ const ProjectWorkspace = () => {
           />
         </ReactFlowProvider>
       </div>
+
+      <ShareProjectDialog 
+        project={project}
+        isOpen={showShareDialog}
+        onClose={() => setShowShareDialog(false)}
+        onProjectUpdate={handleProjectUpdate}
+      />
     </div>
   );
 };
