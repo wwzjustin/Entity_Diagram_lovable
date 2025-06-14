@@ -34,10 +34,14 @@ const EntityCard = ({ id, data, selected }: EntityCardProps) => {
           <div key={column.id} className="flex items-center gap-2 p-2 rounded hover:bg-gray-50">
             <div className="flex items-center gap-1 min-w-0 flex-1">
               {column.isPrimaryKey && (
-                <Key className="h-3 w-3 text-amber-600 flex-shrink-0" title="Primary Key" />
+                <div title="Primary Key">
+                  <Key className="h-3 w-3 text-amber-600 flex-shrink-0" />
+                </div>
               )}
               {column.isForeignKey && (
-                <Key className="h-3 w-3 text-blue-600 flex-shrink-0" title="Foreign Key" />
+                <div title="Foreign Key">
+                  <Key className="h-3 w-3 text-blue-600 flex-shrink-0" />
+                </div>
               )}
               <span className="font-medium text-gray-900 text-sm truncate">{column.name}</span>
             </div>

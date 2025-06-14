@@ -1,5 +1,5 @@
 
-import { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import {
   ReactFlow,
   Background,
@@ -47,7 +47,7 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
         id: entity.id,
         type: "entity",
         position: entity.position,
-        data: entity,
+        data: entity as any,
       }));
     setNodes(newNodes);
   }, [entities, setNodes]);
@@ -127,7 +127,7 @@ const ErdCanvas = ({ entities, onEntitySelect, onEntityUpdate, onEntityAdd }: Er
         <Background 
           gap={20} 
           color="#e2e8f0" 
-          variant="dots" 
+          variant="dots" as any
           size={1}
         />
         
