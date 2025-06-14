@@ -178,59 +178,71 @@ const ProjectWorkspace = () => {
 
   return (
     <div className="flex h-screen w-full bg-slate-50">
-      {/* Header */}
-      <div className="absolute top-4 left-4 z-10 flex gap-2">
-        <Button variant="outline" onClick={goBackToProjects} className="gap-2 bg-white">
-          <ArrowLeft className="h-4 w-4" />
-          Back to Projects
-        </Button>
-        <Button variant="outline" onClick={() => setShowMetadata(!showMetadata)} className="gap-2 bg-white">
-          <Users className="h-4 w-4" />
-          Details
-        </Button>
-        <Button variant="outline" onClick={() => setShowShareDialog(true)} className="gap-2 bg-white">
-          <Share className="h-4 w-4" />
-          Share
-        </Button>
-      </div>
-
-      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10">
-        <div className="bg-white px-4 py-2 rounded-lg shadow-sm border">
-          <h1 className="font-semibold text-gray-900">{project.name}</h1>
-          <p className="text-sm text-gray-600">{project.description}</p>
-          <div className="mt-2">
-            <CollaboratorIndicator 
-              contributors={project.contributors}
-              activeCollaborators={project.activeCollaborators}
-            />
+      {/* Fixed Header with proper spacing */}
+      <div className="absolute top-0 left-0 right-0 z-10 bg-white border-b border-gray-200 shadow-sm">
+        <div className="flex items-center justify-between px-4 py-3">
+          {/* Left side buttons */}
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={goBackToProjects} className="gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Projects
+            </Button>
+            <Button variant="outline" onClick={() => setShowMetadata(!showMetadata)} className="gap-2">
+              <Users className="h-4 w-4" />
+              Details
+            </Button>
+            <Button variant="outline" onClick={() => setShowShareDialog(true)} className="gap-2">
+              <Share className="h-4 w-4" />
+              Share
+            </Button>
           </div>
+
+          {/* Center project info */}
+          <div className="flex-1 max-w-md mx-4">
+            <div className="text-center">
+              <h1 className="font-semibold text-gray-900 truncate">{project.name}</h1>
+              <p className="text-sm text-gray-600 truncate">{project.description}</p>
+              <div className="mt-1">
+                <CollaboratorIndicator 
+                  contributors={project.contributors}
+                  activeCollaborators={project.activeCollaborators}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Right side spacer to balance layout */}
+          <div className="w-48"></div>
         </div>
       </div>
 
-      {/* Project Metadata Panel */}
+      {/* Project Metadata Panel - adjusted position */}
       {showMetadata && (
         <div className="absolute top-20 left-4 z-10 w-96">
           <ProjectMetadata project={project} />
         </div>
       )}
 
-      <EntitySidebar 
-        entities={project.entities}
-        selectedEntityId={selectedEntityId}
-        onEntityUpdate={handleEntityUpdate}
-        onEntityDelete={handleEntityDelete}
-        onEntityAdd={handleEntityAdd}
-        onEntitySelect={handleEntitySelect}
-      />
-      <div className="flex-1 h-full">
-        <ReactFlowProvider>
-          <ErdCanvas 
-            entities={project.entities}
-            onEntitySelect={handleEntitySelect}
-            onEntityUpdate={handleEntityUpdate}
-            onEntityAdd={handleEntityAdd}
-          />
-        </ReactFlowProvider>
+      {/* Main content with top padding for header */}
+      <div className="flex w-full pt-16">
+        <EntitySidebar 
+          entities={project.entities}
+          selectedEntityId={selectedEntityId}
+          onEntityUpdate={handleEntityUpdate}
+          onEntityDelete={handleEntityDelete}
+          onEntityAdd={handleEntityAdd}
+          onEntitySelect={handleEntitySelect}
+        />
+        <div className="flex-1 h-full">
+          <ReactFlowProvider>
+            <ErdCanvas 
+              entities={project.entities}
+              onEntitySelect={handleEntitySelect}
+              onEntityUpdate={handleEntityUpdate}
+              onEntityAdd={handleEntityAdd}
+            />
+          </ReactFlowProvider>
+        </div>
       </div>
 
       <ShareProjectDialog 
