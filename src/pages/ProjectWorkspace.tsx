@@ -224,7 +224,7 @@ const ProjectWorkspace = () => {
           </div>
 
           {/* Right side - AI Recommendations */}
-          <div className="w-48 flex justify-end">
+          <div className="flex justify-end">
             <AIRecommendationPanel
               entities={project.entities}
               onEntitiesUpdate={handleEntitiesUpdate}

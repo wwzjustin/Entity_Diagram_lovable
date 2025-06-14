@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Sparkles, Wand2, RefreshCw, CheckCircle } from "lucide-react";
+import { Sparkles, Wand2, RefreshCw, CheckCircle, X } from "lucide-react";
 import { Entity, Column } from "@/types/Entity";
 import { generateAIRecommendations } from "@/utils/aiRecommendations";
 import { applyAIRecommendations } from "@/utils/aiTransformations";
@@ -75,30 +75,42 @@ const AIRecommendationPanel = ({ entities, onEntitiesUpdate, onEntityAdd }: AIRe
   }
 
   return (
-    <Card className="w-96 max-h-[80vh] overflow-y-auto shadow-lg border-purple-200">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-purple-900">
-          <Sparkles className="h-5 w-5" />
-          AI Recommendations
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+    <div className="fixed top-20 right-4 z-20 w-80 max-h-[calc(100vh-6rem)] bg-white rounded-lg shadow-xl border border-purple-200">
+      <div className="flex items-center justify-between p-4 border-b border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
+        <div className="flex items-center gap-2">
+          <Sparkles className="h-5 w-5 text-purple-600" />
+          <h3 className="font-semibold text-purple-900">AI Recommendations</h3>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            setShowRecommendations(false);
+            setRecommendations("");
+          }}
+          className="h-8 w-8 p-0 hover:bg-purple-100"
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <div className="p-4 max-h-96 overflow-y-auto">
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
           <div className="text-sm text-purple-800 whitespace-pre-wrap">
             {recommendations}
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="space-y-3">
           <Button
             onClick={handleApplyRecommendations}
             disabled={isApplying}
-            className="flex-1 gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+            className="w-full gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
           >
             {isApplying ? (
               <>
                 <RefreshCw className="h-4 w-4 animate-spin" />
-                Applying...
+                Applying Changes...
               </>
             ) : (
               <>
@@ -107,24 +119,16 @@ const AIRecommendationPanel = ({ entities, onEntitiesUpdate, onEntityAdd }: AIRe
               </>
             )}
           </Button>
-          <Button
-            onClick={() => {
-              setShowRecommendations(false);
-              setRecommendations("");
-            }}
-            variant="outline"
-            className="flex-1"
-          >
-            Close
-          </Button>
-        </div>
 
-        <div className="text-xs text-gray-500">
-          <CheckCircle className="h-3 w-3 inline mr-1" />
-          Applying recommendations will automatically restructure your entities based on dimensional modeling best practices.
+          <div className="flex items-start gap-2 text-xs text-gray-600 bg-gray-50 p-3 rounded-lg">
+            <CheckCircle className="h-3 w-3 mt-0.5 text-green-600 flex-shrink-0" />
+            <span>
+              Applying recommendations will automatically restructure your entities based on dimensional modeling best practices.
+            </span>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
