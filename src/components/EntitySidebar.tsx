@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -12,9 +11,11 @@ import {
   Eye,
   EyeOff,
   Edit3,
+  Upload,
 } from "lucide-react";
 import { Entity, Column } from "@/types/Entity";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import ImportDialog from "./ImportDialog";
 
 interface EntitySidebarProps {
   entities: Entity[];
@@ -41,6 +42,7 @@ const EntitySidebar = ({
 }: EntitySidebarProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editingEntity, setEditingEntity] = useState<Entity | null>(null);
+  const [showImportDialog, setShowImportDialog] = useState(false);
 
   const selectedEntity = entities.find(e => e.id === selectedEntityId);
 
@@ -63,6 +65,12 @@ const EntitySidebar = ({
     onEntitySelect(newEntity.id);
     setEditingEntity(newEntity);
     setIsEditing(true);
+  };
+
+  const handleImportEntities = (importedEntities: Entity[]) => {
+    importedEntities.forEach(entity => {
+      onEntityAdd(entity);
+    });
   };
 
   const handleEditEntity = (entity: Entity) => {
@@ -130,10 +138,21 @@ const EntitySidebar = ({
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Entities</h2>
-          <Button onClick={handleCreateEntity} size="sm" className="gap-1">
-            <Plus className="h-4 w-4" />
-            Add Entity
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleCreateEntity} size="sm" className="gap-1">
+              <Plus className="h-4 w-4" />
+              Add
+            </Button>
+            <Button 
+              onClick={() => setShowImportDialog(true)} 
+              size="sm" 
+              variant="outline" 
+              className="gap-1"
+            >
+              <Upload className="h-4 w-4" />
+              Import
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -219,7 +238,7 @@ const EntitySidebar = ({
           <div className="text-center py-8 text-gray-500">
             <Database className="h-12 w-12 mx-auto mb-4 text-gray-300" />
             <p className="text-sm">No entities yet</p>
-            <p className="text-xs text-gray-400">Click "Add Entity" to get started</p>
+            <p className="text-xs text-gray-400">Click "Add" or "Import" to get started</p>
           </div>
         )}
       </div>
@@ -303,6 +322,12 @@ const EntitySidebar = ({
           </div>
         </div>
       )}
+
+      <ImportDialog
+        isOpen={showImportDialog}
+        onClose={() => setShowImportDialog(false)}
+        onEntitiesImported={handleImportEntities}
+      />
     </div>
   );
 };
