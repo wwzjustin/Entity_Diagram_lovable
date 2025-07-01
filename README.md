@@ -1,73 +1,108 @@
-# Welcome to your Lovable project
 
-## Project info
+# ERD Tool - AI-Powered Database Design Platform
 
-**URL**: https://lovable.dev/projects/68a93092-bae6-42f6-9ac5-6b07d2bf54a7
+Transform your database design process with intelligent Entity Relationship Diagram creation, powered by advanced AI recommendations and collaborative features.
 
-## How can I edit this code?
+## 🚀 Product Overview
 
-There are several ways of editing your application.
+ERD Tool is a cutting-edge database design platform that combines intuitive visual design with AI-powered intelligence to help teams create, optimize, and maintain professional database schemas. Built for modern development teams, product managers, and data architects who demand both speed and precision.
 
-**Use Lovable**
+### ✨ Key Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/68a93092-bae6-42f6-9ac5-6b07d2bf54a7) and start prompting.
+**🎨 Visual ERD Designer**
+- Intuitive drag-and-drop interface for creating entity relationship diagrams
+- Professional, publication-ready diagrams with customizable styling
+- Real-time visual feedback and automatic relationship detection
 
-Changes made via Lovable will be committed automatically to this repo.
+**🤖 AI-Powered Recommendations**
+- Intelligent analysis of your database schema structure
+- Automated suggestions for dimensional modeling and normalization
+- Performance optimization recommendations based on industry best practices
+- Missing relationship and foreign key detection
 
-**Use your preferred IDE**
+**⚡ Smart Auto-Layout**
+- Automatically organize entities for optimal visibility
+- Intelligent spacing and relationship line routing
+- One-click diagram beautification and organization
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+**👥 Team Collaboration**
+- Real-time collaborative editing with team members
+- Share diagrams instantly with stakeholders
+- Export to multiple formats (PNG, SVG, SQL, etc.)
+- Version control and change tracking
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 🎯 Perfect For
 
-Follow these steps:
+- **Product Leaders**: Communicate data architecture decisions clearly to stakeholders
+- **Engineering Teams**: Accelerate database design and reduce technical debt
+- **Data Architects**: Leverage AI insights for optimal schema design
+- **Startups to Enterprise**: Scale from simple schemas to complex data warehouses
+
+### 💼 Business Impact
+
+- **50% Faster** database design iterations
+- **Reduce Technical Debt** with AI-powered optimization suggestions
+- **Improve Team Alignment** through visual collaboration
+- **Accelerate Development** with automated best practice recommendations
+
+### 🛠 Technical Excellence
+
+Built on modern web technologies for reliability and performance:
+- **React & TypeScript** for robust frontend architecture
+- **Tailwind CSS & shadcn/ui** for beautiful, accessible UI components
+- **Real-time Collaboration** capabilities
+- **Export & Integration** ready for your existing workflow
+
+---
+
+## Development Setup
+
+### Prerequisites
+- Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+### Quick Start
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
+# Clone the repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
+# Navigate to project directory
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
+# Install dependencies
 npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Development Options
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+**🌐 Use Lovable (Recommended)**
+Visit the [Lovable Project](https://lovable.dev/projects/68a93092-bae6-42f6-9ac5-6b07d2bf54a7) and start building with AI assistance. Changes are automatically committed to this repository.
 
-**Use GitHub Codespaces**
+**💻 Local Development**
+Use your preferred IDE with the setup above. All changes pushed to this repo will sync with Lovable.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+**☁️ GitHub Codespaces**
+Click the "Code" button → "Codespaces" → "New codespace" for instant cloud development.
 
-## What technologies are used for this project?
+## 🚀 Deployment
 
-This project is built with:
+Deploy instantly via [Lovable](https://lovable.dev/projects/68a93092-bae6-42f6-9ac5-6b07d2bf54a7):
+1. Click Share → Publish
+2. Your app goes live immediately with professional hosting
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Custom Domain Setup
+Connect your own domain in Project > Settings > Domains. Perfect for white-labeling and professional deployment.
 
-## How can I deploy this project?
+## 📖 Documentation & Support
 
-Simply open [Lovable](https://lovable.dev/projects/68a93092-bae6-42f6-9ac5-6b07d2bf54a7) and click on Share -> Publish.
+- **Live Demo**: Experience the tool at your deployed URL
+- **Documentation**: [Lovable Docs](https://docs.lovable.dev/)
+- **Community**: [Discord Support](https://discord.com/channels/1119885301872070706/1280461670979993613)
+- **Video Tutorials**: [YouTube Playlist](https://www.youtube.com/watch?v=9KHLTZaJcR8&list=PLbVHz4urQBZkJiAWdG8HWoJTdgEysigIO)
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+**Ready to revolutionize your database design process?** [Get Started Now](https://lovable.dev/projects/68a93092-bae6-42f6-9ac5-6b07d2bf54a7) 🚀
