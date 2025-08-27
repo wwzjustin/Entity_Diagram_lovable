@@ -53,48 +53,7 @@ Built on modern web technologies for reliability and performance:
 - **Real-time Collaboration** capabilities
 - **Export & Integration** ready for your existing workflow
 
----
 
-## Development Setup
-
-### Prerequisites
-- Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-### Quick Start
-
-```sh
-# Clone the repository
-git clone <YOUR_GIT_URL>
-
-# Navigate to project directory
-cd <YOUR_PROJECT_NAME>
-
-# Install dependencies
-npm i
-
-# Start development server
-npm run dev
-```
-
-### Development Options
-
-**🌐 Use Lovable (Recommended)**
-Visit the [Lovable Project](https://lovable.dev/projects/68a93092-bae6-42f6-9ac5-6b07d2bf54a7) and start building with AI assistance. Changes are automatically committed to this repository.
-
-**💻 Local Development**
-Use your preferred IDE with the setup above. All changes pushed to this repo will sync with Lovable.
-
-**☁️ GitHub Codespaces**
-Click the "Code" button → "Codespaces" → "New codespace" for instant cloud development.
-
-## 🚀 Deployment
-
-Deploy instantly via [Lovable](https://lovable.dev/projects/68a93092-bae6-42f6-9ac5-6b07d2bf54a7):
-1. Click Share → Publish
-2. Your app goes live immediately with professional hosting
-
-### Custom Domain Setup
-Connect your own domain in Project > Settings > Domains. Perfect for white-labeling and professional deployment.
 
 ## 📖 Documentation & Support
 
